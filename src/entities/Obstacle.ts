@@ -13,7 +13,7 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
     this.setActive(true).setVisible(true);
     const body = this.body as Phaser.Physics.Arcade.Body;
     body.enable = true;
-    body.setVelocityX(-speed);
+    body.setVelocityY(speed); // moves downward
   }
 
   deactivate(): void {

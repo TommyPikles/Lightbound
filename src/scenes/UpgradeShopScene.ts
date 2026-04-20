@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, COLORS, UPGRADE_COSTS, UPGRADE_MAX_LEVEL } from '../utils/Constants';
+import { GAME_WIDTH, GAME_HEIGHT, COLORS, UPGRADE_COSTS, UPGRADE_MAX_LEVEL } from '../utils/Constants';
 import { loadSave, writeSave, type Upgrades } from '../utils/SaveData';
 
 interface UpgradeInfo {
@@ -23,22 +23,23 @@ export class UpgradeShopScene extends Phaser.Scene {
 
   create(): void {
     const save = loadSave();
+    const cx = GAME_WIDTH / 2;
 
-    this.add.text(GAME_WIDTH / 2, 40, 'UPGRADES', {
+    this.add.text(cx, 60, 'UPGRADES', {
       fontSize: '32px',
       color: COLORS.UI_ACCENT,
       fontFamily: 'monospace',
       fontStyle: 'bold',
     }).setOrigin(0.5);
 
-    this.add.text(GAME_WIDTH / 2, 75, `Light Orbs: ${save.totalOrbs}`, {
-      fontSize: '16px',
+    this.add.text(cx, 100, `Light Orbs: ${save.totalOrbs}`, {
+      fontSize: '18px',
       color: COLORS.UI_TEXT,
       fontFamily: 'monospace',
     }).setOrigin(0.5);
 
-    const startY = 120;
-    const rowHeight = 90;
+    const startY = 170;
+    const rowHeight = 140;
 
     UPGRADES.forEach((upg, i) => {
       const y = startY + i * rowHeight;
@@ -48,22 +49,23 @@ export class UpgradeShopScene extends Phaser.Scene {
       const canAfford = save.totalOrbs >= cost;
 
       // Label
-      this.add.text(100, y, `${upg.icon} ${upg.label}`, {
-        fontSize: '20px',
+      this.add.text(cx, y, `${upg.icon} ${upg.label}`, {
+        fontSize: '22px',
         color: COLORS.UI_TEXT,
         fontFamily: 'monospace',
-      });
+      }).setOrigin(0.5);
 
-      this.add.text(100, y + 25, upg.description, {
+      this.add.text(cx, y + 28, upg.description, {
         fontSize: '12px',
         color: '#888888',
         fontFamily: 'monospace',
-      });
+      }).setOrigin(0.5);
 
-      // Level pips
+      // Level pips (centered)
+      const pipStartX = cx - ((UPGRADE_MAX_LEVEL - 1) * 25) / 2;
       for (let p = 0; p < UPGRADE_MAX_LEVEL; p++) {
         const pipColor = p < level ? 0xffd700 : 0x333333;
-        this.add.rectangle(550 + p * 25, y + 12, 18, 18, pipColor).setStrokeStyle(1, 0x555555);
+        this.add.rectangle(pipStartX + p * 25, y + 58, 18, 18, pipColor).setStrokeStyle(1, 0x555555);
       }
 
       // Buy button
@@ -71,7 +73,7 @@ export class UpgradeShopScene extends Phaser.Scene {
         const btnText = canAfford ? `[ ${cost} orbs ]` : `${cost} orbs`;
         const btnColor = canAfford ? COLORS.UI_ACCENT : '#555555';
 
-        const btn = this.add.text(780, y + 8, btnText, {
+        const btn = this.add.text(cx, y + 90, btnText, {
           fontSize: '16px',
           color: btnColor,
           fontFamily: 'monospace',
@@ -89,7 +91,7 @@ export class UpgradeShopScene extends Phaser.Scene {
           });
         }
       } else {
-        this.add.text(780, y + 8, 'MAX', {
+        this.add.text(cx, y + 90, 'MAX', {
           fontSize: '16px',
           color: COLORS.UI_ACCENT,
           fontFamily: 'monospace',
@@ -99,8 +101,8 @@ export class UpgradeShopScene extends Phaser.Scene {
     });
 
     // Back button
-    const backBtn = this.add.text(GAME_WIDTH / 2, 490, '[ BACK ]', {
-      fontSize: '20px',
+    const backBtn = this.add.text(cx, GAME_HEIGHT - 60, '[ BACK ]', {
+      fontSize: '22px',
       color: COLORS.UI_TEXT,
       fontFamily: 'monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });

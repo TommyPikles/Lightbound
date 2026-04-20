@@ -12,25 +12,25 @@ export class HUD {
   private ascensionBar: Phaser.GameObjects.Graphics;
 
   constructor(scene: Phaser.Scene) {
-    this.scoreText = scene.add.text(16, 12, 'Score: 0', {
-      fontSize: '18px',
+    this.scoreText = scene.add.text(16, 16, 'Score: 0', {
+      fontSize: '20px',
       color: COLORS.UI_TEXT,
       fontFamily: 'monospace',
     }).setScrollFactor(0).setDepth(100);
 
-    this.orbText = scene.add.text(16, 36, 'Orbs: 0', {
-      fontSize: '14px',
+    this.orbText = scene.add.text(16, 42, 'Orbs: 0', {
+      fontSize: '16px',
       color: COLORS.UI_ACCENT,
       fontFamily: 'monospace',
     }).setScrollFactor(0).setDepth(100);
 
-    this.healthText = scene.add.text(GAME_WIDTH - 16, 12, 'HP: 3', {
-      fontSize: '18px',
+    this.healthText = scene.add.text(GAME_WIDTH - 16, 16, 'HP: 3', {
+      fontSize: '20px',
       color: COLORS.UI_DANGER,
       fontFamily: 'monospace',
     }).setOrigin(1, 0).setScrollFactor(0).setDepth(100);
 
-    // Corruption meter bar
+    // Corruption meter bar (below score area)
     this.corruptionBar = scene.add.graphics().setScrollFactor(0).setDepth(100);
 
     // Ascension charge bar
@@ -48,10 +48,10 @@ export class HUD {
     this.healthText.setText(`HP: ${'♥'.repeat(Math.max(0, health))}`);
 
     // Corruption bar (top center)
-    const barW = 200;
-    const barH = 8;
-    const barX = GAME_WIDTH / 2 - barW / 2;
-    const barY = 14;
+    const barW = GAME_WIDTH - 32;
+    const barH = 6;
+    const barX = 16;
+    const barY = 68;
 
     this.corruptionBar.clear();
     this.corruptionBar.fillStyle(0x222222, 1);
@@ -60,7 +60,7 @@ export class HUD {
     this.corruptionBar.fillRect(barX, barY, barW * corruption.normalized, barH);
 
     // Ascension bar (below corruption)
-    const ascBarY = barY + barH + 4;
+    const ascBarY = barY + barH + 3;
     this.ascensionBar.clear();
     this.ascensionBar.fillStyle(0x222222, 1);
     this.ascensionBar.fillRect(barX, ascBarY, barW, barH);

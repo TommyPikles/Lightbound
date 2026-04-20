@@ -30,8 +30,8 @@ export class GameScene extends Phaser.Scene {
   private scrollSpeed = BASE_SCROLL_SPEED;
   private elapsedTime = 0;
   private isGameOver = false;
-  private keyUp!: Phaser.Input.Keyboard.Key;
-  private keyDown!: Phaser.Input.Keyboard.Key;
+  private keyLeft!: Phaser.Input.Keyboard.Key;
+  private keyRight!: Phaser.Input.Keyboard.Key;
 
   constructor() {
     super({ key: 'Game' });
@@ -47,10 +47,10 @@ export class GameScene extends Phaser.Scene {
     // Speed upgrade increases base scroll (= more distance per second)
     this.scrollSpeed += save.upgrades.speed * 20;
 
-    // --- Background layers ---
+    // --- Background layers (scroll vertically) ---
     this.createBackground();
 
-    // --- Lane indicators ---
+    // --- Lane indicators (vertical lines) ---
     this.drawLaneLines();
 
     // --- Player ---
@@ -91,15 +91,16 @@ export class GameScene extends Phaser.Scene {
     // --- HUD ---
     this.hud = new HUD(this);
 
-    // --- Input ---
+    // --- Input: keyboard (desktop) ---
     if (this.input.keyboard) {
-      this.keyUp = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
-      this.keyDown = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+      this.keyLeft = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+      this.keyRight = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
     }
 
+    // --- Input: touch swipe (mobile) ---
     const touch = new TouchControls(this);
-    touch.onSwipeUp = () => this.player.switchLane(-1);
-    touch.onSwipeDown = () => this.player.switchLane(1);
+    touch.onSwipeLeft = () => this.player.switchLane(-1);
+    touch.onSwipeRight = () => this.player.switchLane(1);
   }
 
   update(_time: number, delta: number): void {
@@ -111,9 +112,9 @@ export class GameScene extends Phaser.Scene {
     this.scrollSpeed = BASE_SCROLL_SPEED + this.elapsedTime * SPEED_INCREMENT * 60;
     this.spawnManager.updateSpeed(this.scrollSpeed, this.elapsedTime);
 
-    // Scroll backgrounds
-    this.bg1.tilePositionX += (this.scrollSpeed * 0.3 * delta) / 1000;
-    this.bg2.tilePositionX += (this.scrollSpeed * 0.6 * delta) / 1000;
+    // Scroll backgrounds downward
+    this.bg1.tilePositionY -= (this.scrollSpeed * 0.3 * delta) / 1000;
+    this.bg2.tilePositionY -= (this.scrollSpeed * 0.6 * delta) / 1000;
 
     // Update systems
     this.scoreManager.updateDistance(delta, this.scrollSpeed);
@@ -126,47 +127,47 @@ export class GameScene extends Phaser.Scene {
     // HUD
     this.hud.update(this.scoreManager, this.player.health, this.corruptionMeter, this.ascensionManager);
 
-    // Input
+    // Keyboard input (desktop)
     if (this.input.keyboard) {
-      if (Phaser.Input.Keyboard.JustDown(this.keyUp)) {
+      if (Phaser.Input.Keyboard.JustDown(this.keyLeft)) {
         this.player.switchLane(-1);
       }
-      if (Phaser.Input.Keyboard.JustDown(this.keyDown)) {
+      if (Phaser.Input.Keyboard.JustDown(this.keyRight)) {
         this.player.switchLane(1);
       }
     }
 
-    // Clean up off-screen objects
+    // Clean up off-screen objects (past bottom of screen)
     this.cleanOffscreen(this.orbGroup);
     this.cleanOffscreen(this.enemyGroup);
     this.cleanOffscreen(this.obstacleGroup);
   }
 
   private createBackground(): void {
-    // Generate simple gradient textures for parallax
+    // Generate vertical-scrolling background textures
     const bgGfx1 = this.make.graphics({ x: 0, y: 0 });
     bgGfx1.fillStyle(0x0d0520, 1);
-    bgGfx1.fillRect(0, 0, 256, GAME_HEIGHT);
-    // Add some subtle star dots
+    bgGfx1.fillRect(0, 0, GAME_WIDTH, 256);
+    // Subtle star dots
     bgGfx1.fillStyle(0x333366, 1);
     for (let i = 0; i < 30; i++) {
-      const sx = Math.random() * 256;
-      const sy = Math.random() * GAME_HEIGHT;
+      const sx = Math.random() * GAME_WIDTH;
+      const sy = Math.random() * 256;
       bgGfx1.fillCircle(sx, sy, 1);
     }
-    bgGfx1.generateTexture('bg1', 256, GAME_HEIGHT);
+    bgGfx1.generateTexture('bg1', GAME_WIDTH, 256);
     bgGfx1.destroy();
 
     const bgGfx2 = this.make.graphics({ x: 0, y: 0 });
     bgGfx2.fillStyle(0x150a30, 0.5);
-    bgGfx2.fillRect(0, 0, 256, GAME_HEIGHT);
+    bgGfx2.fillRect(0, 0, GAME_WIDTH, 256);
     bgGfx2.fillStyle(0x221144, 0.3);
     for (let i = 0; i < 10; i++) {
-      const sx = Math.random() * 256;
-      const sy = Math.random() * GAME_HEIGHT;
+      const sx = Math.random() * GAME_WIDTH;
+      const sy = Math.random() * 256;
       bgGfx2.fillCircle(sx, sy, Math.random() * 20 + 5);
     }
-    bgGfx2.generateTexture('bg2', 256, GAME_HEIGHT);
+    bgGfx2.generateTexture('bg2', GAME_WIDTH, 256);
     bgGfx2.destroy();
 
     this.bg1 = this.add.tileSprite(0, 0, GAME_WIDTH, GAME_HEIGHT, 'bg1')
@@ -178,11 +179,11 @@ export class GameScene extends Phaser.Scene {
   private drawLaneLines(): void {
     const gfx = this.add.graphics().setDepth(2);
     gfx.lineStyle(1, COLORS.LANE_LINE, 0.3);
-    // Draw lines between lanes
-    const midY1 = (LANES[0] + LANES[1]) / 2;
-    const midY2 = (LANES[1] + LANES[2]) / 2;
-    gfx.lineBetween(0, midY1, GAME_WIDTH, midY1);
-    gfx.lineBetween(0, midY2, GAME_WIDTH, midY2);
+    // Vertical lines between lanes
+    const midX1 = (LANES[0] + LANES[1]) / 2;
+    const midX2 = (LANES[1] + LANES[2]) / 2;
+    gfx.lineBetween(midX1, 0, midX1, GAME_HEIGHT);
+    gfx.lineBetween(midX2, 0, midX2, GAME_HEIGHT);
   }
 
   private collectOrb(_player: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody | Phaser.Tilemaps.Tile, orbObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody | Phaser.Tilemaps.Tile): void {
@@ -200,7 +201,6 @@ export class GameScene extends Phaser.Scene {
     if (!enemy.active) return;
 
     if (this.player.isAscended) {
-      // Destroy enemy during ascension for bonus
       enemy.kill();
       this.scoreManager.addOrbs(1);
       return;
@@ -225,7 +225,7 @@ export class GameScene extends Phaser.Scene {
   private cleanOffscreen(group: Phaser.Physics.Arcade.Group): void {
     group.getChildren().forEach((child) => {
       const sprite = child as Phaser.Physics.Arcade.Sprite;
-      if (sprite.active && sprite.x < -60) {
+      if (sprite.active && sprite.y > GAME_HEIGHT + 60) {
         sprite.setActive(false).setVisible(false);
         const body = sprite.body as Phaser.Physics.Arcade.Body;
         if (body) {

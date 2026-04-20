@@ -1,25 +1,25 @@
-// Game dimensions
-export const GAME_WIDTH = 960;
-export const GAME_HEIGHT = 540;
+// Game dimensions (portrait 9:16)
+export const GAME_WIDTH = 540;
+export const GAME_HEIGHT = 960;
 
-// Lane positions (Y coordinates)
-export const LANES = [150, 270, 390] as const;
+// Lane positions (X coordinates — left, center, right)
+export const LANES = [110, 270, 430] as const;
 export const LANE_COUNT = LANES.length;
 
 // Player
-export const PLAYER_X = 150;
+export const PLAYER_Y = 800; // near bottom of screen
 export const PLAYER_WIDTH = 40;
 export const PLAYER_HEIGHT = 60;
 export const LANE_SWITCH_DURATION = 150; // ms
 
-// World scroll
+// World scroll (downward)
 export const BASE_SCROLL_SPEED = 300;
 export const SPEED_INCREMENT = 0.5; // per second of gameplay
 
-// Spawning
+// Spawning (from top)
 export const SPAWN_INTERVAL_BASE = 1200; // ms
 export const SPAWN_INTERVAL_MIN = 400;   // ms (fastest it gets)
-export const SPAWN_X = GAME_WIDTH + 50;  // spawn off-screen right
+export const SPAWN_Y = -50;              // spawn off-screen top
 
 // Light orbs
 export const ORB_SIZE = 20;

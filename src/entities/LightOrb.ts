@@ -16,12 +16,12 @@ export class LightOrb extends Phaser.Physics.Arcade.Sprite {
     this.value = value;
     const body = this.body as Phaser.Physics.Arcade.Body;
     body.enable = true;
-    body.setVelocityX(-speed);
+    body.setVelocityY(speed); // moves downward
 
-    // Subtle bob
+    // Subtle horizontal bob
     this.scene.tweens.add({
       targets: this,
-      y: y - 8,
+      x: x - 8,
       duration: 400,
       yoyo: true,
       repeat: -1,

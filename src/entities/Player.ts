@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import {
-  LANES, LANE_COUNT, PLAYER_X, LANE_SWITCH_DURATION,
+  LANES, LANE_COUNT, PLAYER_Y, LANE_SWITCH_DURATION,
 } from '../utils/Constants';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
@@ -12,11 +12,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private switching = false;
 
   constructor(scene: Phaser.Scene) {
-    super(scene, PLAYER_X, LANES[1], 'player');
+    super(scene, LANES[1], PLAYER_Y, 'player');
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
     this.setOrigin(0.5);
+    this.setDepth(10);
     const body = this.body as Phaser.Physics.Arcade.Body;
     body.setAllowGravity(false);
     body.setImmovable(true);
@@ -32,7 +33,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.scene.tweens.add({
       targets: this,
-      y: LANES[this.currentLane],
+      x: LANES[this.currentLane],
       duration: LANE_SWITCH_DURATION,
       ease: 'Power2',
       onComplete: () => {

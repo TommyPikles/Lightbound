@@ -26,11 +26,13 @@ export class GameOverScene extends Phaser.Scene {
     if (isNewHighScore) save.highScore = score;
     writeSave(save);
 
+    const cx = GAME_WIDTH / 2;
+
     // Overlay
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7);
+    this.add.rectangle(cx, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7);
 
     // Title
-    this.add.text(GAME_WIDTH / 2, 80, 'TRIAL ENDED', {
+    this.add.text(cx, 140, 'TRIAL ENDED', {
       fontSize: '36px',
       color: COLORS.UI_DANGER,
       fontFamily: 'monospace',
@@ -38,7 +40,7 @@ export class GameOverScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     if (isNewHighScore) {
-      this.add.text(GAME_WIDTH / 2, 120, 'NEW HIGH SCORE!', {
+      this.add.text(cx, 185, 'NEW HIGH SCORE!', {
         fontSize: '16px',
         color: COLORS.UI_ACCENT,
         fontFamily: 'monospace',
@@ -46,7 +48,7 @@ export class GameOverScene extends Phaser.Scene {
     }
 
     // Stats
-    const statsY = 180;
+    const statsY = 260;
     const stats = [
       `Score: ${score}`,
       `Distance: ${Math.floor(distance)}m`,
@@ -56,18 +58,18 @@ export class GameOverScene extends Phaser.Scene {
     ];
 
     stats.forEach((line, i) => {
-      this.add.text(GAME_WIDTH / 2, statsY + i * 30, line, {
-        fontSize: '16px',
+      this.add.text(cx, statsY + i * 36, line, {
+        fontSize: '18px',
         color: COLORS.UI_TEXT,
         fontFamily: 'monospace',
       }).setOrigin(0.5);
     });
 
     // Buttons
-    const btnY = 390;
+    const btnY = 560;
 
-    const retryBtn = this.add.text(GAME_WIDTH / 2, btnY, '[ RETRY ]', {
-      fontSize: '24px',
+    const retryBtn = this.add.text(cx, btnY, '[ RETRY ]', {
+      fontSize: '28px',
       color: COLORS.UI_ACCENT,
       fontFamily: 'monospace',
       fontStyle: 'bold',
@@ -77,8 +79,8 @@ export class GameOverScene extends Phaser.Scene {
     retryBtn.on('pointerout', () => retryBtn.setScale(1));
     retryBtn.on('pointerdown', () => this.scene.start('Game'));
 
-    const shopBtn = this.add.text(GAME_WIDTH / 2, btnY + 45, '[ UPGRADES ]', {
-      fontSize: '18px',
+    const shopBtn = this.add.text(cx, btnY + 60, '[ UPGRADES ]', {
+      fontSize: '20px',
       color: COLORS.UI_TEXT,
       fontFamily: 'monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
@@ -87,8 +89,8 @@ export class GameOverScene extends Phaser.Scene {
     shopBtn.on('pointerout', () => shopBtn.setScale(1));
     shopBtn.on('pointerdown', () => this.scene.start('UpgradeShop'));
 
-    const menuBtn = this.add.text(GAME_WIDTH / 2, btnY + 85, '[ MENU ]', {
-      fontSize: '16px',
+    const menuBtn = this.add.text(cx, btnY + 115, '[ MENU ]', {
+      fontSize: '18px',
       color: '#888888',
       fontFamily: 'monospace',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });

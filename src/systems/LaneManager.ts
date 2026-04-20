@@ -1,6 +1,6 @@
 import { LANES } from '../utils/Constants';
 
-export function getLaneY(lane: number): number {
+export function getLaneX(lane: number): number {
   return LANES[lane];
 }
 

@@ -3,9 +3,9 @@ import { LightOrb } from '../entities/LightOrb';
 import { ShadowEnemy } from '../entities/ShadowEnemy';
 import { Obstacle } from '../entities/Obstacle';
 import {
-  SPAWN_X, SPAWN_INTERVAL_BASE, SPAWN_INTERVAL_MIN,
+  SPAWN_Y, SPAWN_INTERVAL_BASE, SPAWN_INTERVAL_MIN,
 } from '../utils/Constants';
-import { getRandomLane, getLaneY } from './LaneManager';
+import { getRandomLane, getLaneX } from './LaneManager';
 
 export class SpawnManager {
   private scene: Phaser.Scene;
@@ -61,18 +61,18 @@ export class SpawnManager {
   private spawnWave(): void {
     const roll = Math.random();
     const lane = getRandomLane();
-    const y = getLaneY(lane);
+    const x = getLaneX(lane);
 
     if (roll < 0.45) {
-      this.spawnOrb(SPAWN_X, y);
+      this.spawnOrb(x, SPAWN_Y);
     } else if (roll < 0.70) {
-      this.spawnEnemy(SPAWN_X, y);
+      this.spawnEnemy(x, SPAWN_Y);
     } else if (roll < 0.90) {
-      this.spawnObstacle(SPAWN_X, y);
+      this.spawnObstacle(x, SPAWN_Y);
     } else {
-      // Orb cluster — 3 orbs in a row
+      // Orb cluster — 3 orbs in a column
       for (let i = 0; i < 3; i++) {
-        this.spawnOrb(SPAWN_X + i * 40, y);
+        this.spawnOrb(x, SPAWN_Y - i * 40);
       }
     }
   }
